@@ -11,16 +11,16 @@
             <div class="row">
             <div class="col-md-8" >
             <div class="card">
-                @if(session('success'))
-                    
                
-                <div class="alert alert-success" role="alert">
-                    <strong>{{ session('success') }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-
-                  @endif
-
+              @if(session('success'))
+                      
+                 
+                  <div class="alert alert-success" role="alert">
+                      <strong>{{ session('success') }}</strong>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+  
+                    @endif  
             </div>
                 <div class="card-header">All Category</div>
                 
@@ -56,8 +56,8 @@
                          
                         {{ Carbon\carbon::parse($category-> created_at) -> DiffForHumans() }}</td>
                         
-                        <td><a href="" class="btn btn-info">Edit </a></td>
-                        <td><a href="" class="btn btn-danger">Delete </a></td>
+                        <td><a href="{{ url('category/edit/'.$category->id) }}" class="btn btn-info">Edit </a>
+                        <a href="{{ url('softdelete/category/'.$category->id) }}" class="btn btn-danger">Delete </a></td>
 
                       </tr>
 
@@ -92,6 +92,100 @@
 
 
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{-- Trash Part --}}
+
+
+
+            <div class="container">
+              <div class="row">
+              <div class="col-md-8" >
+              <div class="card">
+                  
+  
+              </div>
+                  <div class="card-header">Trash List</div>
+                  
+                  <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Sl No.</th>
+                          <th scope="col">Category Name</th>
+                          <th scope="col">User</th>
+                          <th scope="col">Created_At</th>
+                          <th scope="col-2">Action</th>
+                        </tr>
+                      </thead>
+                      {{-- @php($i=1) --}}
+                      @foreach ($trachCat  as $category)
+                          
+                     
+                      <tbody>   
+                        <tr>
+                          
+                          {{-- <th scope="row">{{ $i++ }}</th> --}}
+                          <th scope="row">{{ $categories->firstItem()+$loop->index }}</th>
+                          <td >{{ $category->category_name }}</td>
+                          <td>{{ $category->user->name }}</td>
+  
+                          {{-- for Query builder join --}}
+                          {{-- <td>{{ $category->name }}</td> --}}
+                        <td>
+                          @if ($category->created_at == NULL) 
+                              <span class  "text-danger">No Date Set </span>
+                          
+                          @else 
+                           
+                          {{ Carbon\carbon::parse($category-> created_at) -> DiffForHumans() }}</td>
+                          
+                          <td><a href="{{ url('category/restore/'.$category->id) }}" class="btn btn-info">Restore </a>
+                          <a href="{{ url('category/pdelete/'.$category->id) }}" class="btn btn-danger">Permenant Delete </a></td>
+  
+                        </tr>
+  
+                          @endif
+                       
+  
+                       
+                        @endforeach
+                      </tbody>
+                    </table>
+                    {{ $trachCat->links() }}
+                  </div>
+              
+                  
+              </div>
+  
+              <div class="col-md-4">
+              
+              </div>
+              </div>
+
+
+{{-- End Trash --}}
+
+
+
         </div>
 
 </x-app-layout>
