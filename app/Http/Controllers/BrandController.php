@@ -9,60 +9,95 @@ use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\StoreBrandRequest;
 use Exception;
 use GrahamCampbell\ResultType\Success;
+use Illuminate\Auth\Events\Validated;
+use Intervention\Image\ImageManager;
+use Image;
 
 class BrandController extends Controller
 {
+    public function __construct(){
+        $this-> middleware('auth');
+    }
     public function AllBrand(){
     
         $brands = Brand::latest()->paginate(5);
 
         return view('admin.brand.index',compact('brands'));
     }
-    public function StoreBrand(StoreBrandRequest $request)
-    {
-        // Get file from request
-        $getImg = $request->file('brand_image');
+    public function StoreBrand(Request $request)
+    {   
 
-        // Move file to public path 
-        $getImgPath = $getImg->move(public_path('image/brand/'), 
+        $ValidatedData = $request->validate([
+            
+                'brand_name' => 'required|unique:brands|min:4', 
+                'brand_image' => 'required|mimes:jpg,jpeg,png', 
+            ],[
+                'brand_name.required' => 'Please input brand name',
+                'brand_image.min' => 'Brand Longer than 4 Charectors',
+            ]
+            );
 
-        // Transform the file's (img) name 
-        $transformImage = $this->transformImageName($request,$getImg));
+        
+    //     // Get file from request
+    //     $getImg = $request->file('brand_image');
+
+    //     // Move file to public path 
+    //     $getImgPath = $getImg->move(public_path('image/brand/'), 
+
+    //     // Transform the file's (img) name 
+    //     $transformImage = $this->transformImageName($request,$getImg));
         
 
   
-       $imagePath = '/image/brand/'.$transformImage;
+    //    $imagePath = '/image/brand/'.$transformImage;
 
 
-       if($this->createImage($request,$imagePath))
-        {
-        return Redirect()->back()->with('success', 'Brand inserted successfully');
-       }
-       else {
-           // Say something or send back with error. I didnt want to send an array, but ok
-           return Redirect()->back()->with('error','Something went wrong');
-       }
-    }
-
-    public function transformImageName(Request $request, $brand_image)
-    {    
-        $name_gen = hexdec(uniqid());
-        $img_ext = strtolower($brand_image->getClientOriginalExtension());
-        $img_name = $name_gen.'.'.$img_ext;
-
-        return $img_name;
-    }
-
-    public function createImage(Request $request,$imagePath)
-    {
-        $brand = Brand::insert([
+    //    if($this->createImage($request,$imagePath))
+    //     {
+    //     return Redirect()->back()->with('success', 'Brand inserted successfully');
+    //    }
+    //    else {
+    //        // Say something or send back with error. I didnt want to send an array, but ok
+    //        return Redirect()->back()->with('error','Something went wrong');
+    //    }
+        $brand_image = $request->file('brand_image');
+        $name_gen = hexdec(uniqid()).'.'.$brand_image->getClientOriginalExtension();
+        $path = public_path('image/brand/');
+        $combined_path =  ($path.$name_gen);
+        //dd($combined_path);
+        Image::make($brand_image)->resize(300,200)->save($combined_path);
+      
+        $last_image = '/image/brand/'.$name_gen;
+        //dd($path);
+        // dd($name_gen);
+        Brand::insert([
             'brand_name' => $request->brand_name,
-            'brand_image' => $imagePath,
+            'brand_image' => $last_image  ,
             'created_at' => Carbon::now()   
-            ]);
+        ]);
 
-            return true;
+        return  Redirect()->back()->with('success','Successfully added');
     }
+
+    // public function transformImageName(Request $request, $brand_image)
+    // {    
+    //     $name_gen = hexdec(uniqid());
+    //     $img_ext = strtolower($brand_image->getClientOriginalExtension());
+    //     $img_name = $name_gen.'.'.$img_ext;
+
+    //     return $img_name;
+    // }
+
+    // public function createImage(Request $request,$imagePath)
+    // {
+    //     $brand = Brand::insert([
+    //         'brand_name' => $request->brand_name,
+    //         'brand_image' => $imagePath,
+    //         'created_at' => Carbon::now()   
+    //         ]);
+
+    //         return true;
+    // }
 
     public function Edit($id){
         $brands = Brand::find($id);

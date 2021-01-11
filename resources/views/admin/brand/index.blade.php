@@ -51,7 +51,7 @@
                         <th scope="row">{{ $brands->firstItem()+$loop->index }}</th>
                         <td >{{ $brand->brand_name }}</td>
                         <td><img src={{ $brand->brand_image }} style="height:40px; width:70px;" alt=""></td>
-
+                       {{-- {{  dd($brand->brand_image) }} --}}
                         {{-- for Query builder join --}}
                         {{-- <td>{{ $category->name }}</td> --}}
                       <td>
