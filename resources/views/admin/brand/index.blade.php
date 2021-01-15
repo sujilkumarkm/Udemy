@@ -1,9 +1,5 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-          <b>  All Brand </b>
-                  </h2>
-    </x-slot>
+@extends('admin.admin_master')
+@section('admin')
 
     <div class="py-12">
        
@@ -12,15 +8,7 @@
             <div class="col-md-8" >
             <div class="card">
                
-              @if(session('success'))
-                      
-        
-                  <div class="alert alert-success" role="alert">
-                      <strong>{{ session('success') }}</strong>
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-  
-                @endif  
+            
 
                 @if(session('error'))
                 <div class="alert alert-danger" role="alert">
@@ -89,12 +77,15 @@
                               <span class="text-danger">{{ $message }}</span>
                           @enderror
                         </div>
+                        <div class="mb-3">
                               <label for="exampleInputEmail1" class="form-label">Brand Image</label>
                               <input type="file" name="brand_image" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                               @error('brand_image')
                                   <span class="text-danger">{{ $message }}</span>
                               @enderror
-                              <button type="submit" class="btn btn-primary">Add Brand</button>
+                            </div>    
+                                <button type="submit" class="btn btn-primary">Add Brand</button>
+                              
                             </form>
                             </div>
                             
@@ -109,6 +100,4 @@
 
             </div>
 
-        </div>
-
-</x-app-layout>
+@endsection

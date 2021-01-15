@@ -12,6 +12,7 @@ use GrahamCampbell\ResultType\Success;
 use Illuminate\Auth\Events\Validated;
 use Intervention\Image\ImageManager;
 use Image;
+use Illuminate\Support\Facades\Auth;
 
 class BrandController extends Controller
 {
@@ -76,7 +77,13 @@ class BrandController extends Controller
             'created_at' => Carbon::now()   
         ]);
 
-        return  Redirect()->back()->with('success','Successfully added');
+        $notification = array(
+                'message' => 'brand inserted successfully',
+                'alert-type' => 'success',
+
+        );
+
+        return  Redirect()->back()->with($notification);
     }
 
     // public function transformImageName(Request $request, $brand_image)
@@ -148,8 +155,13 @@ class BrandController extends Controller
             'brand_image' => $imagePath,
             'updated_at' => Carbon::now()   
             ]);
+            $notification = array(
+                'message' => 'brand inserted successfully',
+                'alert-type' => 'success',
 
-            return Redirect()->back()->with('success', 'Brand inserted successfully');
+        );
+
+            return Redirect()->back()->with($notification);
     }
     public function changeImage(Request $request, $brand_image)
         {    
@@ -171,5 +183,11 @@ class BrandController extends Controller
         unlink($new_folder);
         Brand::find($id)->delete();
         return redirect()->back()->with('success','Brand Deleted Successfully');
+    }
+    public function Logout()
+    {
+            Auth::logout();     
+            return Redirect()->route('login')->with('success','User Logout');
+        
     }
 }

@@ -4,8 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MultiController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChangePass;
 use App\Models\User;
+use App\Models\Multipic;
 use Illuminate\Support\Facades\DB;
 
 
@@ -27,7 +32,10 @@ Route::get('/email/verify', function () {
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $brands = DB::table('brands')->get();
+    $abouts = DB::table('home_abouts')->first();
+    $images = Multipic::all();
+    return view('home', compact('brands','abouts','images'));
 });
 
 Route::get('/home', function () {
@@ -39,7 +47,25 @@ Route::get('/about', function () {
 });
 
 // Route::get('contact','ContactController@index');
-Route::get('/abcee- fjgkk',[ContactController::class,'index'])->name('con');
+Route::get('/admin/contact',[ContactController::class,'AdminContact'])->name('admin.contact');
+Route::get('admin/add/contact',[ContactController::class,'AddContact'])->name('add.contact');
+Route::post('admin/store/contact',[ContactController::class,'StoreContact'])->name('store.contact');
+Route::get('/admin/edit/{id}',[ContactController::class,'EditContact']);
+Route::post('/admin/update/{id}',[ContactController::class,'UpdateContact']);
+Route::get('/admin/delete/{id}',[ContactController::class,'DeleteContact']);
+Route::get('/admin/message',[ContactController::class,'AdminMessage'])->name('admin.message');
+Route::get('/admin/delete/{id}',[ContactController::class,'MessageDelete']);
+
+
+
+//Home Contact Page
+Route::get('/contact',[ContactController::class,'Contact'])->name('contact');
+Route::post('/contact/form',[ContactController::class,'ContactForm'])->name('contact.form');
+
+
+
+
+
 
 
 //Category Controller
@@ -79,3 +105,34 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::get('/user/logout',[BrandController::class,'Logout'])->name('user.logout');
+
+
+//Admin All Route
+Route::get('/home/slider',[HomeController::class,'HomeSlider'])->name('admin.slider.index');
+Route::get('/add/slider',[HomeController::class,'AddSlider'])->name('add.slider');
+Route::get('/slider/edit/{id}',[HomeController::class,'EditSlider']);
+Route::post('/store/slider',[HomeController::class,'StoreSlider'])->name('store.slider');   
+Route::post('/slider/update/{id}',[HomeController::class,'Update']);
+Route::get('slider/delete/{id}',[HomeController::class,'Delete']); 
+
+//Home About All Routes
+Route::get('home/about',[AboutController::class,'HomeAbout'])->name('home.about'); 
+Route::get('/add/about',[AboutController::class,'AddAbout'])->name('add.about');
+Route::post('/store/about',[AboutController::class,'StoreAbout'])->name('store.about'); 
+Route::get('/about/edit/{id}',[AboutController::class,'EditAbout']);
+Route::post('/about/update/{id}',[AboutController::class,'UpdateAbout']);
+Route::get('/about/delete/{id}',[AboutController::class,'AboutDelete']); 
+
+
+//Portfolio Page Route
+Route::get('/portfolio',[AboutController::class,'Portfolio'])->name('portfolio'); 
+
+
+ //Chnange Password and User Profile Route
+ Route::get('/user/password',[ChangePass::class, 'CPassword'])->name('change.password');
+ Route::post('/password/update',[ChangePass::class, 'UpdatePassword'])->name('password.update');
+
+
+ //User Profile
+ Route::get('/user/profile',[ProfileController::class, 'PUpdate'])->name('profile.update');
+ Route::post('/user/profile/update',[ProfileController::class, 'UpdateProfile'])->name('update.user.profile');
